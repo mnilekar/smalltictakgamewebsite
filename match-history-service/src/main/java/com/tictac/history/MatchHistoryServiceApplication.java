@@ -11,16 +11,3 @@ public class MatchHistoryServiceApplication {
         SpringApplication.run(MatchHistoryServiceApplication.class, args);
     }
 }
-
-
-# match-history-service/src/main/resources/application.yml
-spring:
-application:
-name: match-history-service
-server:
-port: 8084
-management:
-endpoints:
-web:
-exposure:
-include: "health,info"

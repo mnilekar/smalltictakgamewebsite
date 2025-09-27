@@ -11,16 +11,3 @@ public class StatsServiceApplication {
         SpringApplication.run(StatsServiceApplication.class, args);
     }
 }
-
-
-# stats-service/src/main/resources/application.yml
-spring:
-application:
-name: stats-service
-server:
-port: 8085
-management:
-endpoints:
-web:
-exposure:
-include: "health,info"

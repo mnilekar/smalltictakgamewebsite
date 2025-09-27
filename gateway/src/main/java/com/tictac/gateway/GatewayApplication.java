@@ -11,16 +11,3 @@ public class GatewayApplication {
         SpringApplication.run(GatewayApplication.class, args);
     }
 }
-
-
-# gateway/src/main/resources/application.yml
-spring:
-application:
-name: gateway
-server:
-port: 8080
-management:
-endpoints:
-web:
-exposure:
-include: "health,info"

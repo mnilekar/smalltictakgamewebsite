@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: match-history-service
+server:
+  port: 8084
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info"

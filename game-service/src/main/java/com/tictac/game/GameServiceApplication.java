@@ -11,16 +11,3 @@ public class GameServiceApplication {
         SpringApplication.run(GameServiceApplication.class, args);
     }
 }
-
-
-# game-service/src/main/resources/application.yml
-spring:
-application:
-name: game-service
-server:
-port: 8083
-management:
-endpoints:
-web:
-exposure:
-include: "health,info"

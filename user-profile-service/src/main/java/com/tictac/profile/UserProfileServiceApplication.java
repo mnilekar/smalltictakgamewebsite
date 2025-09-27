@@ -11,16 +11,3 @@ public class UserProfileServiceApplication {
         SpringApplication.run(UserProfileServiceApplication.class, args);
     }
 }
-
-
-# user-profile-service/src/main/resources/application.yml
-spring:
-application:
-name: user-profile-service
-server:
-port: 8082
-management:
-endpoints:
-web:
-exposure:
-include: "health,info"

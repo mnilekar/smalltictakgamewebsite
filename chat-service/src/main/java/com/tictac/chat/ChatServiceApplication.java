@@ -11,16 +11,3 @@ public class ChatServiceApplication {
         SpringApplication.run(ChatServiceApplication.class, args);
     }
 }
-
-
-# chat-service/src/main/resources/application.yml
-spring:
-application:
-name: chat-service
-server:
-port: 8086
-management:
-endpoints:
-web:
-exposure:
-include: "health,info"
