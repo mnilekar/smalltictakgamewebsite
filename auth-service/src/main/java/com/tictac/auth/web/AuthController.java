@@ -27,4 +27,21 @@ public class AuthController {
                                               @RequestParam("last") String last) {
         return new UsernameSuggestionResponse(service.suggestUsernames(first, last));
     }
+    @PostMapping("/login")
+    public LoginResponse login(@Valid @RequestBody com.tictac.auth.dto.LoginRequest req) {
+        return loginService.login(req);
+    }
+
+
+    @GetMapping("/me")
+    public java.util.Map<String, Object> me(@org.springframework.security.core.annotation.AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
+        if (user == null) throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED);
+        return java.util.Map.of("username", user.getUsername());
+    }
+    private final RegistrationService service;
+    private final LoginService loginService;
+    public AuthController(RegistrationService service, LoginService loginService) {
+        this.service = service; this.loginService = loginService;
+    }
+
 }

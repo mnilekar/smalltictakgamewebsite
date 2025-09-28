@@ -67,4 +67,17 @@ public class JdbcUserRepository implements UserRepository {
                 "salt", salt
         ));
     }
+    @Override
+    public java.util.Optional<UserWithHash> findByUsername(String username) {
+        String sql = """
+                    SELECT u.USER_ID, u.USERNAME, c.PASSWORD_HASH
+                        FROM USERS u
+                        JOIN USER_CREDENTIALS c ON c.USER_ID = u.USER_ID
+                        WHERE u.USERNAME = :u
+                    """;
+        var list = jdbc.query(sql, java.util.Map.of("u", username), (rs, rowNum) ->
+                new UserWithHash(rs.getLong("USER_ID"), rs.getString("USERNAME"), rs.getString("PASSWORD_HASH"))
+        );
+        return list.isEmpty() ? java.util.Optional.empty() : java.util.Optional.of(list.get(0));
+    }
 }
