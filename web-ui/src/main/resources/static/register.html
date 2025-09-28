@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Register — TicTac</title>
+    <link rel="stylesheet" href="/styles.css"/>
+</head>
+<body>
+<div class="container">
+    <div class="nav">
+        <a href="/index.html">Home</a>
+        <a href="/login.html">Login</a>
+        <a href="/register.html">Register</a>
+    </div>
+    <div class="card">
+        <h2>Create account</h2>
+        <form id="regForm">
+            <div class="row">
+                <div class="input"><label>First name*</label><input id="firstName" required /></div>
+                <div class="input"><label>Last name*</label><input id="lastName" required /></div>
+            </div>
+            <div class="row">
+                <div class="input"><label>Birth date*</label><input id="birthDate" type="date" required /></div>
+                <div class="input"><label>Nationality*</label><input id="nationality" required /></div>
+            </div>
+            <div class="row">
+                <div class="input"><label>Email*</label><input id="email" type="email" required /></div>
+                <div class="input"><label>Mobile*</label><input id="mobile" required /></div>
+            </div>
+            <div class="row">
+                <div class="input"><label>Desired username* <span class="small" id="unameHints"></span></label><input id="username" required /></div>
+                <div class="input"><label>Password*</label><input id="password" type="password" required /></div>
+            </div>
+            <div class="small">Password must be ≥8 chars with at least 1 uppercase, 1 lowercase, and 1 special character.</div>
+            <div id="reg-msg" class="error"></div>
+            <div id="reg-ok" class="success"></div>
+            <button class="btn" type="submit">Submit</button>
+            <button class="btn alt" type="reset">Clear</button>
+            <button class="btn alt" type="button" onclick="location.href='/index.html'">Cancel</button>
+        </form>
+    </div>
+</div>
+<script src="/app.js"></script>
+<script>setupRegisterPage();</script>
+</body>
+</html>

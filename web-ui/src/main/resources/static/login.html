@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Login — TicTac</title>
+    <link rel="stylesheet" href="/styles.css"/>
+</head>
+<body>
+<div class="container">
+    <div class="nav">
+        <a href="/index.html">Home</a>
+        <a href="/login.html">Login</a>
+        <a href="/register.html">Register</a>
+    </div>
+    <div class="card">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <div class="input"><label>Username*</label><input id="login-username" required /></div>
+            <div class="input"><label>Password*</label><input id="login-password" type="password" required /></div>
+            <button class="btn" type="submit">Login</button>
+            <button class="btn alt" type="button" onclick="location.href='/index.html'">Cancel</button>
+            <div id="login-msg" class="error"></div>
+        </form>
+    </div>
+</div>
+<script src="/app.js"></script>
+<script>setupLoginPage();</script>
+</body>
+</html>

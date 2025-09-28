@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Dashboard — TicTac</title>
+    <link rel="stylesheet" href="/styles.css"/>
+</head>
+<body>
+<div class="container">
+    <div class="nav">
+        <a href="/dashboard.html">Home / Let's Play</a>
+        <a href="#" onclick="goStats()">Stats</a>
+        <a href="#" onclick="goProfile()">Profile</a>
+        <a href="#" onclick="logout()">Logout</a>
+    </div>
+    <div class="card">
+        <h2>Welcome, <span id="who"></span></h2>
+        <p class="small">Choose: Play vs System, Play vs User, or Self game (coming in next tasks).</p>
+        <div class="row">
+            <button class="btn" onclick="alert('Play vs System — TODO')">Play vs System</button>
+            <button class="btn" onclick="alert('Play vs Global User — TODO')">Play vs Global User</button>
+            <button class="btn" onclick="alert('Self Game — TODO')">Self Game</button>
+        </div>
+    </div>
+</div>
+<script src="/app.js"></script>
+<script>setupDashboard();</script>
+</body>
+</html>

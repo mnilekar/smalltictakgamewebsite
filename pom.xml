@@ -24,6 +24,7 @@
         <module>stats-service</module>
         <module>chat-service</module>
         <module>web-frontend</module>
+        <module>web-ui</module>
     </modules>
 
 
