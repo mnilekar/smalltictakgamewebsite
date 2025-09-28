@@ -23,8 +23,8 @@ public class AuthController {
     }
 
     @GetMapping("/suggest")
-    public UsernameSuggestionResponse suggest(@RequestParam String first,
-                                              @RequestParam String last) {
+    public UsernameSuggestionResponse suggest(@RequestParam("first") String first,
+                                              @RequestParam("last") String last) {
         return new UsernameSuggestionResponse(service.suggestUsernames(first, last));
     }
 }
