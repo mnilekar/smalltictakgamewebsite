@@ -14,3 +14,7 @@ app:
     issuer: tictac-auth
     secret: ${JWT_SECRET:change-me-change-me-change-me-change-me-change-me-0123456789}
     ttl-seconds: 3600
+
+logging:
+  level:
+    org.springframework.security: DEBUG

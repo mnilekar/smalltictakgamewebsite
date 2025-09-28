@@ -10,10 +10,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-@Component
+// NOTE: no @Component here; bean is provided via SecurityConfig
 public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtUtil jwt;
     public JwtAuthFilter(JwtUtil jwt) { this.jwt = jwt; }
