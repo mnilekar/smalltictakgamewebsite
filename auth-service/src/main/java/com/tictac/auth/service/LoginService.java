@@ -29,7 +29,9 @@ public class LoginService {
         var u = opt.get();
         if (!encoder.matches(req.getPassword(), u.passwordHash()))
             throw new ResponseStatusException(UNAUTHORIZED, "Invalid credentials");
+        // ...
         String token = jwt.generate(u.userId(), u.username());
+        // ...
         return new LoginResponse(token, u.userId(), u.username());
     }
 }

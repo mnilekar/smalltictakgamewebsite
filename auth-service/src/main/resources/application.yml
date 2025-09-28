@@ -7,8 +7,10 @@ spring:
     driver-class-name: oracle.jdbc.OracleDriver
 server.port: 8081
 management.endpoints.web.exposure.include: "health,info"
+
+
 app:
   jwt:
     issuer: tictac-auth
-    secret: "dbfjasbfjbsfjsbdgkjsjkbsdklfjghsifgjhsvblkjxcvbsifxkjgcbvsifhkxcgbvsdifoxkhlcvbsdf oikxlcjbvsidofkljxcgbvlsifdkjvxcb ihsdflkxvblshdfkxbviksjfxvbl hfbxcvkjhb"
+    secret: ${JWT_SECRET:change-me-change-me-change-me-change-me-change-me-0123456789}
     ttl-seconds: 3600
