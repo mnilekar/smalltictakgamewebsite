@@ -1,48 +1,49 @@
 package com.tictac.auth.security;
 
-
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.time.Instant;
 import java.util.Date;
-import java.util.Map;
-import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-
 @Component
 public class JwtUtil {
-    private final SecretKey key;
-    private final String issuer;
-    private final long ttlSeconds;
+    private final Key key;
+    private final long ttlMillis;
 
-
-    public JwtUtil(@Value("${app.jwt.secret}") String secret,
-                   @Value("${app.jwt.issuer}") String issuer,
-                   @Value("${app.jwt.ttl-seconds}") long ttlSeconds) {
+    public JwtUtil(
+            @Value("${security.jwt.secret:change-me-change-me-change-me-change-me-change-me-1234567890}") String secret,
+            @Value("${security.jwt.ttlSeconds:3600}") long ttlSeconds) {
+        // For HMAC keys, JJWT expects at least 256-bit secret; this default string is long enough.
         this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-        this.issuer = issuer;
-        this.ttlSeconds = ttlSeconds;
+        this.ttlMillis = ttlSeconds * 1000L;
     }
 
-
-    public String generate(long userId, String username) {
+    public String generate(String subject) {
         Instant now = Instant.now();
-        Instant exp = now.plusSeconds(ttlSeconds);
         return Jwts.builder()
-                .issuer(issuer)
-                .subject(username)
-                .claims(Map.of("uid", userId))
+                .subject(subject)
                 .issuedAt(Date.from(now))
-                .expiration(Date.from(exp))
+                .expiration(Date.from(now.plusMillis(ttlMillis)))
                 .signWith(key)
                 .compact();
     }
 
+    public String extractSubject(String jwt) {
+        return Jwts.parser().verifyWith(key).build()
+                .parseSignedClaims(jwt)
+                .getPayload().getSubject();
+    }
 
-    public io.jsonwebtoken.Claims parse(String token) {
-        return Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload();
+    public boolean isValid(String jwt) {
+        try {
+            extractSubject(jwt);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

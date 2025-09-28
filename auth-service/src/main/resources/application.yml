@@ -10,5 +10,5 @@ management.endpoints.web.exposure.include: "health,info"
 app:
   jwt:
     issuer: tictac-auth
-    secret: ${JWT_SECRET:dev-secret-change-me}
+    secret: "dbfjasbfjbsfjsbdgkjsjkbsdklfjghsifgjhsvblkjxcvbsifxkjgcbvsifhkxcgbvsdifoxkhlcvbsdf oikxlcjbvsidofkljxcgbvlsifdkjvxcb ihsdflkxvblshdfkxbviksjfxvbl hfbxcvkjhb"
     ttl-seconds: 3600
