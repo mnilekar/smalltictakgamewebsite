@@ -83,7 +83,7 @@ function stopTimer(){ if (timerId) { clearInterval(timerId); timerId = null; } }
 
 async function startSelf() {
   clearMsg();
-  const first = document.getElementById('self-first').value;
+  const first = firstOverride || document.getElementById('self-first').value;
   try {
     const resp = await authFetch(`${GAME_API}/self/start`, {
       method: 'POST',
@@ -105,8 +105,8 @@ async function startSelf() {
 
 async function startVs() {
   clearMsg();
-  const you = document.getElementById('vs-you').value;
-  const difficulty = document.getElementById('vs-diff').value;
+  const you = youOverride || document.getElementById('vs-you').value;
+  const difficulty = diffOverride || document.getElementById('vs-diff').value;
   try {
     const resp = await authFetch(`${GAME_API}/vs-system/start`, {
       method: 'POST',
@@ -216,4 +216,21 @@ function setupGamePage(){
   document.querySelectorAll('.cell').forEach(c => c.addEventListener('click', playCell));
 
   clearBoardOnly();
+    const q = new URLSearchParams(location.search);
+    const mode = q.get('mode'); // self | vs-system | pvp
+    if (mode) {
+      const panel = document.getElementById('start-panel');
+      if (panel) panel.style.display = 'none'; // hide chooser
+
+      if (mode === 'self') {
+        const first = q.get('first') || 'X';
+        startSelf(first);
+      } else if (mode === 'vs-system') {
+        const you = q.get('you') || 'X';
+        const diff = q.get('difficulty') || 'EASY';
+        startVs(you, diff);
+      } else if (mode === 'pvp') {
+        showMsg('Global PvP coming in Task 9 🚀');
+      }
+    }
 }

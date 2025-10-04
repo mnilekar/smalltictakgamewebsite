@@ -13,15 +13,14 @@
         <a href="#" onclick="goStats()">Stats</a>
         <a href="#" onclick="goProfile()">Profile</a>
         <a href="#" onclick="logout()">Logout</a>
-        <p><a href="/game.html" class="btn primary">Let’s Play</a></p>
     </div>
     <div class="card">
         <h2>Welcome, <span id="who"></span></h2>
         <p class="small">Choose: Play vs System, Play vs User, or Self game (coming in next tasks).</p>
         <div class="row">
-            <button class="btn" onclick="alert('Play vs System — TODO')">Play vs System</button>
+            <a class="btn" href="/game.html?mode=vs-system&you=X&difficulty=EASY">Play vs System</a>
             <button class="btn" onclick="alert('Play vs Global User — TODO')">Play vs Global User</button>
-            <button class="btn" onclick="alert('Self Game — TODO')">Self Game</button>
+            <a class="btn primary" href="/game.html?mode=self&first=X">Self Game</a>
         </div>
     </div>
 </div>
