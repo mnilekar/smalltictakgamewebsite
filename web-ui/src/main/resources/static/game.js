@@ -208,32 +208,39 @@ function quitGame() {
 function showMsg(t){ const el = document.getElementById('msg'); el.textContent = t || ''; }
 function clearMsg(){ showMsg(''); }
 
+function hideStartPanel(){
+  const p = document.getElementById('start-panel');
+  if (p) p.style.display = 'none';
+}
+
+function hideStartPanel(){
+  const p = document.getElementById('start-panel');
+  if (p) p.style.display = 'none';
+}
+
 function setupGamePage(){
-  // require login
   if (!sessionStorage.getItem('token')) { location.href = '/login.html'; return; }
 
-  document.getElementById('btn-self').addEventListener('click', startSelf);
-  document.getElementById('btn-vs').addEventListener('click', startVs);
+  document.getElementById('btn-self').addEventListener('click', () => startSelf());
+  document.getElementById('btn-vs').addEventListener('click', () => startVs());
   document.getElementById('btn-reset').addEventListener('click', refreshState);
   document.getElementById('btn-quit').addEventListener('click', quitGame);
   document.querySelectorAll('.cell').forEach(c => c.addEventListener('click', playCell));
 
   clearBoardOnly();
-    const q = new URLSearchParams(location.search);
-    const mode = q.get('mode'); // self | vs-system | pvp
-    if (mode) {
-      const panel = document.getElementById('start-panel');
-      if (panel) panel.style.display = 'none'; // hide chooser
 
-      if (mode === 'self') {
-        const first = q.get('first') || 'X';
-        startSelf(first);
-      } else if (mode === 'vs-system') {
-        const you = q.get('you') || 'X';
-        const diff = q.get('difficulty') || 'EASY';
-        startVs(you, diff);
-      } else if (mode === 'pvp') {
-        showMsg('Global PvP coming in Task 9 🚀');
-      }
-    }
+  // Auto-start from query params
+  const p = new URLSearchParams(location.search);
+  const mode = (p.get('mode') || '').toLowerCase();
+
+  if (mode === 'self') {
+    const first = (p.get('first') || 'X').toUpperCase();
+    startSelf({ first }).then(hideStartPanel);
+  } else if (mode === 'vs' || mode === 'vs-system') {
+    const you = (p.get('you') || 'X').toUpperCase();
+    const difficulty = (p.get('difficulty') || 'EASY').toUpperCase();
+    startVs({ you, difficulty }).then(hideStartPanel);
+  } else if (mode === 'pvp') {
+    alert('Play vs Global User — coming in Task 9!');
+  }
 }
