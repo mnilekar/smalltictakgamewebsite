@@ -1,11 +1,28 @@
-# game-service/src/main/resources/application.yml
-spring:
-  application:
-    name: game-service
 server:
-  port: 8083
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "health,info"
+  port: 8091
+
+spring:
+  datasource:
+    url: jdbc:oracle:thin:@//localhost:1521/XEPDB1
+    username: ${DB_USER:TICTAC_APP}
+    password: ${DB_PASS:tictacpass}
+    driver-class-name: oracle.jdbc.OracleDriver
+
+  mvc:
+    cors:
+      mappings:
+        "/api/**":
+          allowed-origins: "http://localhost:8080"
+          allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
+          allowed-headers: "*"
+
+logging:
+  level:
+    org.springframework.security: INFO
+    com.tictac.game: INFO
+
+app:
+  jwt:
+    issuer: tictac-auth
+    secret: ${JWT_SECRET:change-me-change-me-change-me-change-me-change-me-0123456789}
+    ttl-seconds: 3600  # not used here, but kept for symmetry
