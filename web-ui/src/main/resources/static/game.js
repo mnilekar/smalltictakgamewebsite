@@ -81,9 +81,10 @@ function startTimer() {
 }
 function stopTimer(){ if (timerId) { clearInterval(timerId); timerId = null; } }
 
-async function startSelf() {
+async function startSelf(opts = {}) {
   clearMsg();
-  const first = firstOverride || document.getElementById('self-first').value;
+  const first = (opts.first || document.getElementById('self-first').value || 'X').toUpperCase();
+
   try {
     const resp = await authFetch(`${GAME_API}/self/start`, {
       method: 'POST',
@@ -92,21 +93,23 @@ async function startSelf() {
     });
     const j = await resp.json();
     if (!resp.ok) throw new Error(j.message || resp.status);
+
     current = {
       id: j.gameId, mode: j.mode, youAre: j.youAre,
       board: j.board, turn: j.turn, status: j.status, deadlineAt: j.deadlineAt
     };
     renderBoard(current.board);
     updateTop();
-    setStatus('Game started. Your move if it is your turn.', true);
+    setStatus('Game started.', true);
     startTimer();
   } catch (e) { showMsg(e.message || 'Start failed'); }
 }
 
-async function startVs() {
+async function startVs(opts = {}) {
   clearMsg();
-  const you = youOverride || document.getElementById('vs-you').value;
-  const difficulty = diffOverride || document.getElementById('vs-diff').value;
+  const you = (opts.you || document.getElementById('vs-you').value || 'X').toUpperCase();
+  const difficulty = (opts.difficulty || document.getElementById('vs-diff').value || 'EASY').toUpperCase();
+
   try {
     const resp = await authFetch(`${GAME_API}/vs-system/start`, {
       method: 'POST',
@@ -115,13 +118,13 @@ async function startVs() {
     });
     const j = await resp.json();
     if (!resp.ok) throw new Error(j.message || resp.status);
+
     current = {
       id: j.gameId, mode: j.mode, youAre: j.youAre,
       board: j.board, turn: j.turn, status: j.status, deadlineAt: j.deadlineAt
     };
     renderBoard(current.board);
     updateTop();
-    // If system already moved (you chose O), j.systemMove may exist; we just reflect board already.
     setStatus('Game started.', true);
     startTimer();
   } catch (e) { showMsg(e.message || 'Start failed'); }
