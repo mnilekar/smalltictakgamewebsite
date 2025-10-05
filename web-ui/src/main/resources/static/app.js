@@ -125,3 +125,26 @@ function setupDashboard(){
 function goStats(){ alert('Stats page — coming next'); }
 function goProfile(){ alert('Profile page — coming next'); }
 function logout(){ sessionStorage.clear(); location.href='/login.html'; }
+
+
+function isLoggedIn() { return !!sessionStorage.getItem('token'); }
+
+function applyNavAuthState() {
+  const logged = isLoggedIn();
+  const $ = (id) => document.getElementById(id);
+
+  if ($('nav-home')) $('nav-home').href = logged ? '/dashboard.html' : '/index.html';
+  if ($('nav-register')) $('nav-register').style.display = logged ? 'none' : '';
+  if ($('nav-login')) $('nav-login').style.display = logged ? 'none' : '';
+  if ($('nav-dashboard')) $('nav-dashboard').style.display = logged ? '' : 'none';
+  if ($('nav-logout')) {
+    $('nav-logout').style.display = logged ? '' : 'none';
+    $('nav-logout').onclick = (e) => {
+      e.preventDefault();
+      sessionStorage.removeItem('token');
+      window.location.href = '/index.html';
+    };
+  }
+}
+
+document.addEventListener('DOMContentLoaded', applyNavAuthState);

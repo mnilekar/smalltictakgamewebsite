@@ -14,3 +14,9 @@
 .footer{opacity:.7;font-size:.9rem;margin-top:24px}
 .small{color:var(--muted);font-size:.9rem}
 .timer{font-weight:700;color:var(--accent)}
+.cell { color: #111; font-weight: 800; background: #f2f2f7; border: 1px solid #ddd; }
+.label { color: #333; }
+.value { color: #111; font-weight: 700; }
+.pill { background: #e9f0ff; }
+.status-ok { color: #0a7; font-weight: 700; }
+.status-bad { color: #b22; font-weight: 700; }

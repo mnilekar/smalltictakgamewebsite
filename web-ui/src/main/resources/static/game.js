@@ -83,7 +83,7 @@ function stopTimer(){ if (timerId) { clearInterval(timerId); timerId = null; } }
 
 async function startSelf(opts = {}) {
   clearMsg();
-  const first = (opts.first || document.getElementById('self-first').value || 'X').toUpperCase();
+  const first = (opts.first || document.getElementById('self-first')?.value || 'X').toUpperCase();
 
   try {
     const resp = await authFetch(`${GAME_API}/self/start`, {
@@ -107,8 +107,8 @@ async function startSelf(opts = {}) {
 
 async function startVs(opts = {}) {
   clearMsg();
-  const you = (opts.you || document.getElementById('vs-you').value || 'X').toUpperCase();
-  const difficulty = (opts.difficulty || document.getElementById('vs-diff').value || 'EASY').toUpperCase();
+  const you = (opts.you || document.getElementById('vs-you')?.value || 'X').toUpperCase();
+  const difficulty = (opts.difficulty || document.getElementById('vs-diff')?.value || 'EASY').toUpperCase();
 
   try {
     const resp = await authFetch(`${GAME_API}/vs-system/start`, {
@@ -221,15 +221,14 @@ function hideStartPanel(){
 function setupGamePage(){
   if (!sessionStorage.getItem('token')) { location.href = '/login.html'; return; }
 
-  document.getElementById('btn-self').addEventListener('click', () => startSelf());
-  document.getElementById('btn-vs').addEventListener('click', () => startVs());
-  document.getElementById('btn-reset').addEventListener('click', refreshState);
-  document.getElementById('btn-quit').addEventListener('click', quitGame);
+  document.getElementById('btn-self')?.addEventListener('click', () => startSelf());
+  document.getElementById('btn-vs')?.addEventListener('click', () => startVs());
+  document.getElementById('btn-reset')?.addEventListener('click', newBoard);
+  document.getElementById('btn-quit')?.addEventListener('click', quitGame);
   document.querySelectorAll('.cell').forEach(c => c.addEventListener('click', playCell));
 
   clearBoardOnly();
 
-  // Auto-start from query params
   const p = new URLSearchParams(location.search);
   const mode = (p.get('mode') || '').toLowerCase();
 
@@ -242,5 +241,37 @@ function setupGamePage(){
     startVs({ you, difficulty }).then(hideStartPanel);
   } else if (mode === 'pvp') {
     alert('Play vs Global User — coming in Task 9!');
+  }
+}
+
+
+function hideStartPanel(){
+  const p = document.getElementById('start-panel');
+  if (p) p.style.display = 'none';
+}
+
+async function newBoard(){
+  clearMsg();
+  current = null;
+  clearBoardOnly();
+
+  const p = new URLSearchParams(location.search);
+  const mode = (p.get('mode') || '').toLowerCase();
+
+  try {
+    if (mode === 'self') {
+      const first = (p.get('first') || 'X').toUpperCase();
+      await startSelf({ first });
+      hideStartPanel();
+    } else if (mode === 'vs' || mode === 'vs-system') {
+      const you = (p.get('you') || 'X').toUpperCase();
+      const difficulty = (p.get('difficulty') || 'EASY').toUpperCase();
+      await startVs({ you, difficulty });
+      hideStartPanel();
+    } else {
+      setStatus('Choose a mode to start a new game.');
+    }
+  } catch (e) {
+    showMsg(e.message || 'Could not start a new game');
   }
 }
