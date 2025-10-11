@@ -23,10 +23,18 @@ function renderBoard(board) {
   for (let i=0;i<9;i++) cells[i].textContent = board.charAt(i) === '.' ? '' : board.charAt(i);
 }
 
-function setStatus(text, good=false) {
-  const el = document.getElementById('g-status');
+function setStatus(text, ok = false) {
+  const el = document.getElementById('g-status') || document.getElementById('msg');
+  if (!el) return;
   el.textContent = text || '';
-  el.className = good ? 'value status-ok' : 'value status-bad';
+  // apply simple styling if these classes exist in your CSS
+  if (ok) {
+    el.classList.remove('status-bad');
+    el.classList.add('status-ok');
+  } else {
+    el.classList.remove('status-ok');
+    el.classList.add('status-bad');
+  }
 }
 
 function updateTop() {

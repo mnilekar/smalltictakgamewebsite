@@ -13,7 +13,10 @@ import java.util.Map;
 public class PvpController {
 
     private final PvpService service;
-    public PvpController(PvpService service) { this.service = service; }
+
+    public PvpController(PvpService service) {
+        this.service = service;
+    }
 
     @PostMapping("/start")
     public ResponseEntity<?> start(Authentication auth) {
@@ -31,7 +34,7 @@ public class PvpController {
     }
 
     @PostMapping("/{id}/join")
-    public ResponseEntity<?> join(@PathVariable long id, Authentication auth) {
+    public ResponseEntity<?> join(@PathVariable("id") long id, Authentication auth) {
         long uid = userId(auth);
         var dto = service.join(id, uid);
         return ResponseEntity.ok(Map.of(
@@ -48,7 +51,9 @@ public class PvpController {
     public record MoveRequest(int row, int col) {}
 
     @PostMapping("/{id}/move")
-    public ResponseEntity<?> move(@PathVariable long id, @RequestBody MoveRequest req, Authentication auth) {
+    public ResponseEntity<?> move(@PathVariable("id") long id,
+                                  @RequestBody MoveRequest req,
+                                  Authentication auth) {
         long uid = userId(auth);
         var dto = service.move(id, uid, req.row(), req.col());
         return ResponseEntity.ok(Map.of(
@@ -61,7 +66,6 @@ public class PvpController {
         ));
     }
 
-    // Reflection-based extractor so we don't depend on a specific Principal class
     private long userId(Authentication auth) {
         if (auth == null || auth.getPrincipal() == null) throw new RuntimeException("No principal");
         Object p = auth.getPrincipal();
@@ -71,7 +75,6 @@ public class PvpController {
             if (v instanceof Number n) return n.longValue();
             return Long.parseLong(String.valueOf(v));
         } catch (Exception ignore) {
-            // As a fallback: if username is numeric, use it
             String name = auth.getName();
             try { return Long.parseLong(name); } catch (Exception e) {
                 throw new RuntimeException("Unable to resolve user id from principal");

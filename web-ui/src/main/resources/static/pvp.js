@@ -13,13 +13,13 @@ function connectWs(gameId){
   stomp.connect({}, () => {
     stomp.subscribe(`/topic/game.${gameId}`, (frame) => {
       const evt = JSON.parse(frame.body);
-      if (!window.current || window.current.id !== evt.gameId) return;
+      if (!current || current.id !== evt.gameId) return;
       // Update state from event
-      window.current.board = evt.board;
-      window.current.turn = evt.turn;
-      window.current.status = evt.status;
-      window.current.deadlineAt = evt.deadlineAt;
-      renderBoard(window.current.board);
+      current.board = evt.board;
+      current.turn = evt.turn;
+      current.status = evt.status;
+      current.deadlineAt = evt.deadlineAt;
+      renderBoard(current.board);
       updateTop();
       startTimer();
     });
@@ -34,11 +34,13 @@ async function createLobby(){
     const resp = await authFetch(`${GAME_API}/pvp/start`, { method: 'POST' });
     const j = await resp.json();
     if (!resp.ok) throw new Error(j.message || resp.status);
-    window.current = {
+    current = {
       id: j.gameId, mode: j.mode, youAre: j.youAre,
       board: j.board, turn: j.turn, status: j.status, deadlineAt: j.deadlineAt
     };
-    renderBoard(current.board); updateTop(); startTimer();
+    renderBoard(current.board);
+    updateTop();
+    startTimer();
 
     document.getElementById('g-id').textContent = current.id;
     document.getElementById('g-mode').textContent = current.mode;
@@ -58,17 +60,19 @@ async function joinLobby(gameId){
     const resp = await authFetch(`${GAME_API}/pvp/${gameId}/join`, { method: 'POST' });
     const j = await resp.json();
     if (!resp.ok) throw new Error(j.message || resp.status);
-    window.current = {
+    current = {
       id: j.gameId, mode: j.mode, youAre: j.youAre,
       board: j.board, turn: j.turn, status: j.status, deadlineAt: j.deadlineAt
     };
-    renderBoard(current.board); updateTop(); startTimer();
+    renderBoard(current.board);
+    updateTop();
+    startTimer();
     connectWs(current.id);
   } catch (e) { showMsg(e.message || 'Failed to join lobby'); }
 }
 
 async function playCellPvp(ev){
-  if (!window.current || current.status !== 'IN_PROGRESS') return;
+  if (!current || current.status !== 'IN_PROGRESS') return;
   const idx = Number(ev.currentTarget.getAttribute('data-i'));
   const row = Math.floor(idx/3), col = idx%3;
   try {
