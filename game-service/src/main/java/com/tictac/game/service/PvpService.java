@@ -48,13 +48,22 @@ public class PvpService {
     public GameStateDto join(long gameId, long userId) {
         var g = repo.find(gameId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found"));
         if (g.mode != Mode.PVP) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not a PVP game");
-        if (g.playerXId != null && g.playerXId == userId) throw new ResponseStatusException(HttpStatus.CONFLICT, "Already X");
-        if (!repo.setPlayerOIfVacant(gameId, userId)) throw new ResponseStatusException(HttpStatus.CONFLICT, "Game full");
 
-        // fresh read
+        // If already a participant, return state (idempotent join)
+        if (g.playerXId != null && g.playerXId == userId) {
+            return GameStateDto.of(gameId, g, "X");
+        }
+        if (g.playerOId != null && g.playerOId == userId) {
+            return GameStateDto.of(gameId, g, "O");
+        }
+
+        if (!repo.setPlayerOIfVacant(gameId, userId))
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Game full");
+
         g = repo.find(gameId).orElseThrow();
         return GameStateDto.of(gameId, g, "O");
     }
+
 
     @Transactional
     public GameStateDto move(long gameId, long userId, int row, int col) {
@@ -95,6 +104,30 @@ public class PvpService {
 
         return dto;
     }
+    @Transactional
+    public PvpPairDto startPaired(long userX, long userO) {
+        Game g = new Game();
+        g.mode = Mode.PVP;
+        g.playerXId = userX;
+        g.playerOId = userO;
+        g.currentTurn = 'X';
+        g.status = GameStatus.IN_PROGRESS;
+        g.board = ".........";
+        g.deadlineAt = java.time.Instant.now().plus(java.time.Duration.ofSeconds(20));
+        g.startedBy = userX;
+
+        long id = repo.create(g);
+
+        // Initial broadcast so both clients see the fresh board
+        publisher.broadcast(new com.tictac.game.ws.GameEvent(id, g.board, g.currentTurn, g.status, g.deadlineAt.toString()));
+
+        return new PvpPairDto(
+                GameStateDto.of(id, g, "X"),
+                GameStateDto.of(id, g, "O")
+        );
+    }
+
+    public record PvpPairDto(GameStateDto forX, GameStateDto forO) {}
 
     // winner detection
     private static GameStatus evaluate(String b) {
@@ -122,3 +155,5 @@ public class PvpService {
         }
     }
 }
+
+

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>TicTac — Matchmaking</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" href="/styles.css"/>
+    <style>
+        .panel{max-width:720px;margin:24px auto;background:#fff;padding:16px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,.07);}
+        .center{display:flex;flex-direction:column;align-items:center;gap:12px;}
+        .spinner{width:46px;height:46px;border:4px solid #eee;border-top-color:#3a7; border-radius:50%; animation:spin 1s linear infinite;}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .muted{color:#777}
+    </style>
+</head>
+<body>
+<header class="container">
+    <nav class="nav">
+        <a id="nav-home" href="/index.html">Home</a>
+        <a id="nav-register" href="/register.html">Register</a>
+        <a id="nav-login" href="/login.html">Login</a>
+        <a id="nav-dashboard" href="/dashboard.html" style="display:none">Dashboard</a>
+        <a id="nav-logout" href="#" style="display:none">Logout</a>
+    </nav>
+</header>
+
+<main class="panel center">
+    <div class="spinner"></div>
+    <h2>Looking for an opponent…</h2>
+    <div class="muted">We’ll wait up to <span id="mm-secs">30</span> seconds.</div>
+    <div id="mm-msg" class="status-bad"></div>
+    <div class="hstack" id="mm-actions" style="display:none">
+        <button class="btn primary" id="mm-try">Try Again</button>
+        <button class="btn" id="mm-back">Back to Dashboard</button>
+    </div>
+</main>
+
+<script src="/app.js"></script>
+<script src="/mm.js"></script>
+<script>document.addEventListener('DOMContentLoaded', setupMatchmakingPage);</script>
+</body>
+</html>
