@@ -11,4 +11,5 @@ public interface GameRepository {
     void insertMove(long gameId, int moveNo, Long byUserId, char mark, int row, int col);
     void updateState(long gameId, String board, char currentTurn, GameStatus status, Instant deadlineAt);
     int maxMoveNo(long gameId);
+    boolean setPlayerOIfVacant(long gameId, long userId);
 }

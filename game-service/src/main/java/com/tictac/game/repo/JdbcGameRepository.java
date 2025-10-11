@@ -127,4 +127,18 @@ public class JdbcGameRepository implements GameRepository {
                 "SELECT COALESCE(MAX(MOVE_NO),0) FROM MOVES WHERE GAME_ID = ?", Integer.class, gameId);
         return (m != null) ? m : 0;
     }
+    @Override
+    public boolean setPlayerOIfVacant(long gameId, long userId) {
+        String sql = """
+      UPDATE GAMES
+         SET PLAYER_O_ID = :uid
+       WHERE GAME_ID = :id
+         AND PLAYER_O_ID IS NULL
+         AND (PLAYER_X_ID IS NULL OR PLAYER_X_ID <> :uid)
+      """;
+        int n = jdbc.update(sql, Map.of("uid", userId, "id", gameId));
+        return n == 1;
+    }
+
+
 }

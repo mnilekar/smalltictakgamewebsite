@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>TicTac — PvP</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+        .panel { max-width: 980px; margin: 24px auto; background: #fff; padding: 16px; border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,.07); }
+        .board { display:grid; grid-template-columns:repeat(3,110px); grid-template-rows:repeat(3,110px); gap:10px; justify-content:center; margin:16px 0 12px; }
+        .cell { display:flex; align-items:center; justify-content:center; font-size:56px; font-weight:800; cursor:pointer; background:#f2f2f7; border-radius:16px; user-select:none; border:1px solid #ddd; }
+        .cell.disabled { cursor:not-allowed; opacity:.6; }
+        .hstack{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+        .value{color:#111;font-weight:700;}
+        .muted{color:#777;}
+    </style>
+</head>
+<body>
+<header class="container">
+    <nav class="nav">
+        <a id="nav-home" href="/index.html">Home</a>
+        <a id="nav-register" href="/register.html">Register</a>
+        <a id="nav-login" href="/login.html">Login</a>
+        <a id="nav-dashboard" href="/dashboard.html" style="display:none">Dashboard</a>
+        <a id="nav-logout" href="#" style="display:none">Logout</a>
+    </nav>
+</header>
+
+<main class="panel">
+    <h2>Play vs Global User</h2>
+
+    <div class="hstack">
+        <button id="btn-create" class="btn primary">Create Lobby</button>
+        <div id="share" class="muted"></div>
+    </div>
+
+    <div class="hstack" style="margin-top:8px">
+        <div>Game ID: <span id="g-id" class="value">—</span></div>
+        <div>Mode: <span id="g-mode" class="value">—</span></div>
+        <div>You are: <span id="g-you" class="value">—</span></div>
+        <div>Turn: <span id="g-turn" class="value">—</span></div>
+        <div>⏳ <span id="g-timer" class="value">00:00</span></div>
+    </div>
+
+    <div class="board" id="board">
+        <div class="cell" data-i="0"></div><div class="cell" data-i="1"></div><div class="cell" data-i="2"></div>
+        <div class="cell" data-i="3"></div><div class="cell" data-i="4"></div><div class="cell" data-i="5"></div>
+        <div class="cell" data-i="6"></div><div class="cell" data-i="7"></div><div class="cell" data-i="8"></div>
+    </div>
+
+    <div class="hstack">
+        <button id="btn-refresh" class="btn">Refresh</button>
+    </div>
+
+    <div id="msg" class="status-bad"></div>
+</main>
+
+<script src="/app.js"></script>
+<script src="/game.js"></script>
+<!-- STOMP/SockJS from CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+<script src="/pvp.js"></script>
+<script>document.addEventListener('DOMContentLoaded', setupPvpPage);</script>
+</body>
+</html>
