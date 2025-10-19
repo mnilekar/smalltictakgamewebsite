@@ -13,17 +13,15 @@ public class WebCorsConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration cfg = new CorsConfiguration();
-        cfg.setAllowedOrigins(List.of("http://localhost:8080")); // your UI
+        var cfg = new CorsConfiguration();
+        cfg.setAllowedOrigins(List.of("http://localhost:8080","http://127.0.0.1:8080"));
         cfg.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
-        cfg.setAllowedHeaders(List.of("*"));
+        cfg.setAllowedHeaders(List.of("Authorization","Content-Type"));
         cfg.setAllowCredentials(false);
-
-        UrlBasedCorsConfigurationSource src = new UrlBasedCorsConfigurationSource();
-        // apply to your API
-        src.registerCorsConfiguration("/api/**", cfg);
-        // (optionally) actuator too
-        src.registerCorsConfiguration("/actuator/**", cfg);
+        var src = new UrlBasedCorsConfigurationSource();
+        src.registerCorsConfiguration("/**", cfg);
         return src;
     }
+
 }
+
