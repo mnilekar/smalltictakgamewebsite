@@ -7,6 +7,7 @@ import com.tictac.auth.dto.RegistrationResponse;
 import com.tictac.auth.dto.UsernameSuggestionResponse;
 import com.tictac.auth.service.LoginService;
 import com.tictac.auth.service.RegistrationService;
+import com.tictac.auth.service.UserProfileService;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
@@ -20,10 +21,12 @@ public class AuthController {
 
     private final RegistrationService registrationService;
     private final LoginService loginService;
+    private final UserProfileService userProfileService;
 
-    public AuthController(RegistrationService registrationService, LoginService loginService) {
+    public AuthController(RegistrationService registrationService, LoginService loginService, UserProfileService userProfileService) {
         this.registrationService = registrationService;
         this.loginService = loginService;
+        this.userProfileService = userProfileService;
     }
 
     @PostMapping("/register")
@@ -40,6 +43,11 @@ public class AuthController {
     @PostMapping("/login")
     public LoginResponse login(@Valid @RequestBody LoginRequest req) {
         return loginService.login(req);
+    }
+
+    @GetMapping("/profile/{id}")
+    public Object profileById(@PathVariable("id") long userId) {
+        return userProfileService.findProfileById(userId);
     }
 
     @GetMapping("/me")
