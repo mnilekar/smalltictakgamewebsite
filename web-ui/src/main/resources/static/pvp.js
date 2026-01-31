@@ -10,6 +10,7 @@ let countdownActive = false;
 let startAnnouncementDone = false;
 const playerNames = { X: null, O: null };
 const playerIds = { X: null, O: null };
+window.pvpNameForMark = (mark) => nameForMark(mark);
 
 function showMsg(t){ const el = document.getElementById('msg'); if (el) el.textContent = t || ''; }
 function clearMsg(){ showMsg(''); }
@@ -124,7 +125,7 @@ function connectWs(gameId){
   stomp = Stomp.over(sock);
   stomp.debug = null; // quiet
   stomp.connect({}, () => {
-    stomp.subscribe(`/topic/game.${gameId}`, (frame) => {
+    stomp.subscribe(`/topic/game.${gameId}`, async (frame) => {
       const evt = JSON.parse(frame.body);
       if (!current || current.id !== evt.gameId) return;
       // Update state from event
@@ -135,6 +136,8 @@ function connectWs(gameId){
       renderBoard(current.board);
       updateTop();
       startTimer();
+      await syncPlayerNames();
+      maybeStartCountdown();
       updateStatusFromState();
     });
   }, (err) => {
