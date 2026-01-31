@@ -48,37 +48,34 @@ function nameForMark(mark) {
   return playerNames[mark] || mark;
 }
 
+function setCountdownModalVisible(visible) {
+  const modal = document.getElementById('countdown-modal');
+  if (!modal) return;
+  modal.classList.toggle('show', visible);
+  modal.setAttribute('aria-hidden', visible ? 'false' : 'true');
+}
+
+function updateCountdownModal() {
+  const title = document.getElementById('countdown-title');
+  const player = document.getElementById('countdown-player');
+  const number = document.getElementById('countdown-number');
+  if (title) title.textContent = 'Game starts in';
+  if (player) player.textContent = `Starting player: ${nameForMark(current.turn)}`;
+  if (number) number.textContent = String(countdownRemaining);
+}
+
 function updateStatusFromState() {
   if (!current) return;
-  if (countdownActive) {
-    setStatus(`Game starts in ${countdownRemaining}...`, true);
-    return;
-  }
-  if (current.status === 'IN_PROGRESS' && (!current.playerXId || !current.playerOId)) {
-    setStatus('Waiting for opponent to join.', true);
-    return;
-  }
   if (current.status === 'X_WON' || current.status === 'O_WON') {
     const winnerMark = current.status === 'X_WON' ? 'X' : 'O';
-    setStatus(`${nameForMark(winnerMark)} won.`, true);
+    setStatus(`${nameForMark(winnerMark)} Won !`, true);
     return;
   }
   if (current.status === 'TIE') {
-    setStatus('It’s a tie.', true);
+    setStatus('Its a tie , Well played !', true);
     return;
   }
-  if (current.status === 'FORFEIT') {
-    setStatus('Forfeit due to timeout.', true);
-    return;
-  }
-  if (current.status === 'IN_PROGRESS') {
-    const turnName = nameForMark(current.turn);
-    if (current.turn === current.youAre) {
-      setStatus(`Your turn (${turnName}).`, true);
-    } else {
-      setStatus(`${turnName} to play.`, true);
-    }
-  }
+  setStatus('-', true);
 }
 
 function resetStartCountdown() {
@@ -88,6 +85,7 @@ function resetStartCountdown() {
   countdownActive = false;
   window.pvpCountdownActive = false;
   startAnnouncementDone = false;
+  setCountdownModalVisible(false);
 }
 
 function startCountdown() {
@@ -96,10 +94,13 @@ function startCountdown() {
   countdownActive = true;
   window.pvpCountdownActive = true;
   disableBoard(true);
+  updateCountdownModal();
+  setCountdownModalVisible(true);
   updateStatusFromState();
   startCountdownTimer = setInterval(() => {
     countdownRemaining -= 1;
     if (countdownRemaining > 0) {
+      updateCountdownModal();
       updateStatusFromState();
       return;
     }
@@ -108,7 +109,8 @@ function startCountdown() {
     countdownActive = false;
     window.pvpCountdownActive = false;
     startAnnouncementDone = true;
-    setStatus(`${nameForMark(current.turn)} plays first.`, true);
+    setCountdownModalVisible(false);
+    updateStatusFromState();
   }, 1000);
 }
 

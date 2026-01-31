@@ -77,16 +77,30 @@ function startTimer() {
     if (finished || s <= 0) {
       if (finished) {
         let msg = '';
-        if (current.status === 'X_WON' || current.status === 'O_WON') {
-          const winnerMark = current.status === 'X_WON' ? 'X' : 'O';
-          const winnerName = current.mode === 'PVP' && typeof window.pvpNameForMark === 'function'
-            ? window.pvpNameForMark(winnerMark)
-            : winnerMark;
-          msg = `${winnerName} won!`;
-        } else if (current.status === 'TIE') {
-          msg = 'It’s a tie.';
-        } else if (current.status === 'FORFEIT') {
-          msg = 'Forfeit due to timeout.';
+        if (current.mode === 'PVP') {
+          if (current.status === 'X_WON' || current.status === 'O_WON') {
+            const winnerMark = current.status === 'X_WON' ? 'X' : 'O';
+            const winnerName = typeof window.pvpNameForMark === 'function'
+              ? window.pvpNameForMark(winnerMark)
+              : winnerMark;
+            msg = `${winnerName} Won !`;
+          } else if (current.status === 'TIE') {
+            msg = 'Its a tie , Well played !';
+          } else {
+            msg = '-';
+          }
+        } else {
+          if (current.status === 'X_WON' || current.status === 'O_WON') {
+            const winnerMark = current.status === 'X_WON' ? 'X' : 'O';
+            const winnerName = current.mode === 'PVP' && typeof window.pvpNameForMark === 'function'
+              ? window.pvpNameForMark(winnerMark)
+              : winnerMark;
+            msg = `${winnerName} won!`;
+          } else if (current.status === 'TIE') {
+            msg = 'It’s a tie.';
+          } else if (current.status === 'FORFEIT') {
+            msg = 'Forfeit due to timeout.';
+          }
         }
         setStatus(msg || 'Finished', true);
         stopTimer();
