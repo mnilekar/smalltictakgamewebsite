@@ -13,6 +13,34 @@
         .hstack{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
         .value{color:#111;font-weight:700;}
         .muted{color:#777;}
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(14, 18, 26, 0.55);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+        .modal-backdrop.show { display: flex; }
+        .modal-card {
+            background: #fff;
+            padding: 24px 28px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 12px 24px rgba(0,0,0,.18);
+            min-width: 260px;
+        }
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .modal-countdown {
+            font-size: 32px;
+            font-weight: 800;
+            margin: 8px 0 4px;
+        }
     </style>
 </head>
 <body>
@@ -55,6 +83,15 @@
 
     <div id="msg" class="status-bad"></div>
 </main>
+
+<div id="countdown-modal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal-card">
+        <div id="countdown-title" class="modal-title">Game starts soon</div>
+        <div id="countdown-player" class="muted">Starting player: —</div>
+        <div id="countdown-number" class="modal-countdown">3</div>
+        <div class="muted">Get ready…</div>
+    </div>
+</div>
 
 <script src="/app.js"></script>
 <script src="/game.js"></script>

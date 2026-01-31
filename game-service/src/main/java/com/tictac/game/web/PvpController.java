@@ -29,7 +29,9 @@ public class PvpController {
                 "board", dto.board(),
                 "turn", dto.turn(),
                 "status", dto.status(),
-                "deadlineAt", dto.deadlineAt()
+                "deadlineAt", dto.deadlineAt(),
+                "playerXId", dto.playerXId(),
+                "playerOId", dto.playerOId()
         ));
     }
 
@@ -44,7 +46,9 @@ public class PvpController {
                 "board", dto.board(),
                 "turn", dto.turn(),
                 "status", dto.status(),
-                "deadlineAt", dto.deadlineAt()
+                "deadlineAt", dto.deadlineAt(),
+                "playerXId", dto.playerXId(),
+                "playerOId", dto.playerOId()
         ));
     }
 
@@ -62,7 +66,9 @@ public class PvpController {
                 "board", dto.board(),
                 "turn", dto.turn(),
                 "status", dto.status(),
-                "deadlineAt", dto.deadlineAt()
+                "deadlineAt", dto.deadlineAt(),
+                "playerXId", dto.playerXId(),
+                "playerOId", dto.playerOId()
         ));
     }
 
