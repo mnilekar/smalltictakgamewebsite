@@ -78,7 +78,11 @@ function startTimer() {
       if (finished) {
         let msg = '';
         if (current.status === 'X_WON' || current.status === 'O_WON') {
-          msg = `${current.status === 'X_WON' ? 'X' : 'O'} won!`;
+          const winnerMark = current.status === 'X_WON' ? 'X' : 'O';
+          const winnerName = current.mode === 'PVP' && typeof window.pvpNameForMark === 'function'
+            ? window.pvpNameForMark(winnerMark)
+            : winnerMark;
+          msg = `${winnerName} won!`;
         } else if (current.status === 'TIE') {
           msg = 'It’s a tie.';
         } else if (current.status === 'FORFEIT') {
