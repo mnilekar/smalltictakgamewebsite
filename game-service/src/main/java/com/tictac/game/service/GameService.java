@@ -74,7 +74,7 @@ public class GameService {
                 turn = (st==GameStatus.IN_PROGRESS) ? 'O' : '-';
                 Instant dl = (st==GameStatus.IN_PROGRESS) ? newDeadline() : Instant.now();
                 repo.insertMove(id, 1, null, 'X', m[0], m[1]);
-                repo.updateState(id, board, turn, st, dl);
+                repo.updateState(id, board, turn, st, dl, endedAtFor(st), winnerFor(st, null));
                 g.currentTurn = turn; g.status = st; g.board = board; g.deadlineAt = dl;
                 systemMove = Map.of("row", m[0], "col", m[1], "mark", "X");
             }
@@ -89,9 +89,12 @@ public class GameService {
         if (g.status != GameStatus.IN_PROGRESS) throw new ResponseStatusException(HttpStatus.CONFLICT, "Game finished");
         if (g.deadlineAt != null && Instant.now().isAfter(g.deadlineAt)) {
             // Mark forfeit by current player
+            char forfeitingMark = g.currentTurn;
             g.status = GameStatus.FORFEIT;
             g.currentTurn = '-';
-            repo.updateState(g.gameId, g.board, g.currentTurn, g.status, Instant.now());
+            Instant endedAt = endedAtFor(g.status);
+            String winner = winnerFor(g.status, forfeitingMark);
+            repo.updateState(g.gameId, g.board, g.currentTurn, g.status, Instant.now(), endedAt, winner);
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Move deadline exceeded");
         }
 
@@ -114,7 +117,7 @@ public class GameService {
 
         int nextMoveNo = repo.maxMoveNo(g.gameId) + 1;
         repo.insertMove(g.gameId, nextMoveNo, user.userId(), g.currentTurn, req.row(), req.col());
-        repo.updateState(g.gameId, board, nextTurn, st, dl);
+        repo.updateState(g.gameId, board, nextTurn, st, dl, endedAtFor(st), winnerFor(st, null));
 
         g.board = board; g.currentTurn = nextTurn; g.status = st; g.deadlineAt = dl;
 
@@ -137,7 +140,7 @@ public class GameService {
                     Instant dl2 = (st2==GameStatus.IN_PROGRESS) ? newDeadline() : Instant.now();
                     int sysMoveNo = repo.maxMoveNo(g.gameId) + 1;
                     repo.insertMove(g.gameId, sysMoveNo, null, systemMark, m[0], m[1]);
-                    repo.updateState(g.gameId, board, next2, st2, dl2);
+                    repo.updateState(g.gameId, board, next2, st2, dl2, endedAtFor(st2), winnerFor(st2, null));
                     g.board = board; g.currentTurn = next2; g.status = st2; g.deadlineAt = dl2;
                     systemMove = Map.of("row", m[0], "col", m[1], "mark", String.valueOf(systemMark));
                 }
@@ -154,6 +157,27 @@ public class GameService {
         return toResp(g.gameId, g.board, g.currentTurn, g.status, g.deadlineAt, youAre, null, g.mode);
     }
 
+    @Transactional
+    public GameStateResponse forfeit(long gameId, JwtUser user) {
+        Game g = repo.find(gameId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found"));
+        if (g.status != GameStatus.IN_PROGRESS) {
+            String youAre = (g.mode==Mode.SELF) ? "BOTH" : String.valueOf(markForUser(g, user));
+            return toResp(g.gameId, g.board, g.currentTurn, g.status, g.deadlineAt, youAre, null, g.mode);
+        }
+
+        char forfeitingMark = markForUser(g, user);
+        g.status = GameStatus.FORFEIT;
+        g.currentTurn = '-';
+        Instant now = Instant.now();
+        Instant endedAt = now;
+        String winner = winnerFor(g.status, forfeitingMark);
+        repo.updateState(g.gameId, g.board, g.currentTurn, g.status, now, endedAt, winner);
+        g.deadlineAt = now;
+
+        String youAre = (g.mode==Mode.SELF) ? "BOTH" : String.valueOf(forfeitingMark);
+        return toResp(g.gameId, g.board, g.currentTurn, g.status, g.deadlineAt, youAre, null, g.mode);
+    }
+
     private static GameStateResponse toResp(long id, String board, char turn, GameStatus status,
                                             Instant deadline, String youAre, Map<String,Object> systemMove, Mode mode) {
         return new GameStateResponse(id, mode.name(), board, String.valueOf(turn), status.name(), deadline, youAre, systemMove);
@@ -164,5 +188,24 @@ public class GameService {
         if (g.playerXId != null && g.playerXId == user.userId()) return 'X';
         if (g.playerOId != null && g.playerOId == user.userId()) return 'O';
         throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not a participant");
+    }
+
+    private static Instant endedAtFor(GameStatus status) {
+        return status == GameStatus.IN_PROGRESS ? null : Instant.now();
+    }
+
+    private static String winnerFor(GameStatus status, Character forfeitingMark) {
+        return switch (status) {
+            case X_WON -> "X";
+            case O_WON -> "O";
+            case TIE -> "TIE";
+            case FORFEIT -> {
+                if (forfeitingMark == null) {
+                    yield "FORFEIT";
+                }
+                yield forfeitingMark == 'X' ? "O" : "X";
+            }
+            default -> null;
+        };
     }
 }

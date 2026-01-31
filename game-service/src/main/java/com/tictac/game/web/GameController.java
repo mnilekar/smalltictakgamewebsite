@@ -40,4 +40,10 @@ public class GameController {
                                  @PathVariable("id") long id) {
         return service.get(id, user);
     }
+
+    @PostMapping("/forfeit/{id}")
+    public GameStateResponse forfeit(@AuthenticationPrincipal JwtUser user,
+                                     @PathVariable("id") long id) {
+        return service.forfeit(id, user);
+    }
 }

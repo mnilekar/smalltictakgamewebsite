@@ -2,8 +2,18 @@
 
 // Configure API base once. You can override in the browser console via:
 // localStorage.setItem('apiBase', 'http://localhost:8081/api/auth'); location.reload();
-const API_BASE = localStorage.getItem('apiBase') || 'http://localhost:8081/api/auth';
-console.log('API_BASE =', API_BASE);
+const AUTH_API = localStorage.getItem('apiBase') || 'http://localhost:8081/api/auth';
+window.AUTH_API = AUTH_API;
+console.log('AUTH_API =', AUTH_API);
+
+if (typeof window.authFetch !== 'function') {
+  window.authFetch = async (url, opts = {}) => {
+    const token = sessionStorage.getItem('token');
+    if (!token) { location.href = '/login.html'; return Promise.reject('no token'); }
+    const headers = Object.assign({}, opts.headers || {}, { 'Authorization': `Bearer ${token}` });
+    return fetch(url, Object.assign({}, opts, { headers }));
+  };
+}
 
 function $(id){ return document.getElementById(id); }
 function setMsg(id, text, ok=false){
@@ -26,7 +36,7 @@ function setupRegisterPage(){
     const l = (last.value || '').trim();
     if (!f || !l) { hints.textContent = ''; return; }
     try {
-      const resp = await fetch(`${API_BASE.replace('/api/auth','')}/api/auth/suggest?first=${encodeURIComponent(f)}&last=${encodeURIComponent(l)}`);
+      const resp = await fetch(`${AUTH_API.replace('/api/auth','')}/api/auth/suggest?first=${encodeURIComponent(f)}&last=${encodeURIComponent(l)}`);
       if (!resp.ok) return;
       const data = await resp.json();
       hints.textContent = (data.suggestions || []).slice(0,3).join(' • ');
@@ -56,7 +66,7 @@ function setupRegisterPage(){
     }
 
     try {
-      const resp = await fetch(`${API_BASE}/register`, {
+      const resp = await fetch(`${AUTH_API}/register`, {
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body: JSON.stringify(payload)
@@ -89,7 +99,7 @@ function setupLoginPage(){
     };
 
     try {
-      const resp = await fetch(`${API_BASE}/login`, {
+      const resp = await fetch(`${AUTH_API}/login`, {
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body: JSON.stringify(payload)
@@ -116,14 +126,14 @@ function setupDashboard(){
   const token = sessionStorage.getItem('token');
   if (!token) { location.href='/login.html'; return; }
 
-  fetch(`${API_BASE}/me`, { headers: { 'Authorization': `Bearer ${token}` }})
+  fetch(`${AUTH_API}/me`, { headers: { 'Authorization': `Bearer ${token}` }})
     .then(r => r.ok ? r.json() : Promise.reject(r))
     .then(j => { $('who').textContent = j.username || sessionStorage.getItem('username') || 'player'; })
     .catch(() => { logout(); });
 }
 
-function goStats(){ alert('Stats page — coming next'); }
-function goProfile(){ alert('Profile page — coming next'); }
+function goStats(){ location.href = '/stats.html'; }
+function goProfile(){ location.href = '/profile.html'; }
 function logout(){ sessionStorage.clear(); location.href='/login.html'; }
 
 
@@ -133,10 +143,15 @@ function applyNavAuthState() {
   const logged = isLoggedIn();
   const $ = (id) => document.getElementById(id);
 
-  if ($('nav-home')) $('nav-home').href = logged ? '/dashboard.html' : '/index.html';
+  if ($('nav-home')) {
+    $('nav-home').href = logged ? '/dashboard.html' : '/index.html';
+    $('nav-home').style.display = logged ? 'none' : '';
+  }
   if ($('nav-register')) $('nav-register').style.display = logged ? 'none' : '';
   if ($('nav-login')) $('nav-login').style.display = logged ? 'none' : '';
   if ($('nav-dashboard')) $('nav-dashboard').style.display = logged ? '' : 'none';
+  if ($('nav-stats')) $('nav-stats').style.display = logged ? '' : 'none';
+  if ($('nav-profile')) $('nav-profile').style.display = logged ? '' : 'none';
   if ($('nav-logout')) {
     $('nav-logout').style.display = logged ? '' : 'none';
     $('nav-logout').onclick = (e) => {
@@ -147,4 +162,24 @@ function applyNavAuthState() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', applyNavAuthState);
+function setActiveNav() {
+  const path = window.location.pathname;
+  const map = [
+    { match: '/index.html', id: 'nav-home' },
+    { match: '/login.html', id: 'nav-login' },
+    { match: '/register.html', id: 'nav-register' },
+    { match: '/dashboard.html', id: 'nav-dashboard' },
+    { match: '/stats.html', id: 'nav-stats' },
+    { match: '/profile.html', id: 'nav-profile' }
+  ];
+  map.forEach(({ match, id }) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.toggle('active', path.endsWith(match));
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  applyNavAuthState();
+  setActiveNav();
+});
