@@ -18,7 +18,8 @@ public class JdbcUserRepository implements UserRepository {
         this.jdbc = jdbc;
         this.insertUser = new SimpleJdbcInsert(jdbc.getJdbcTemplate())
                 .withTableName("USERS")
-                .usingGeneratedKeyColumns("USER_ID");
+                .usingGeneratedKeyColumns("USER_ID")
+                .usingColumns("USERNAME", "EMAIL", "MOBILE", "NATIONALITY", "FIRST_NAME", "LAST_NAME", "BIRTH_DATE");
     }
 
     @Override
@@ -48,9 +49,7 @@ public class JdbcUserRepository implements UserRepository {
         params.put("LAST_NAME", lastName);
         params.put("BIRTH_DATE", java.sql.Date.valueOf(birthDate));
 
-        Number key = insertUser.usingColumns(
-                "USERNAME", "EMAIL", "MOBILE", "NATIONALITY", "FIRST_NAME", "LAST_NAME", "BIRTH_DATE"
-        ).executeAndReturnKey(params);
+        Number key = insertUser.executeAndReturnKey(params);
 
         return key.longValue();
     }
