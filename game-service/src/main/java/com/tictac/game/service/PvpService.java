@@ -96,7 +96,7 @@ public class PvpService {
         // persist
         int moveNo = repo.maxMoveNo(gameId) + 1;
         repo.insertMove(gameId, moveNo, userId, mark, row, col);
-        repo.updateState(gameId, newBoard, nextTurn, status, deadline);
+        repo.updateState(gameId, newBoard, nextTurn, status, deadline, endedAtFor(status), winnerFor(status));
 
         var dto = new GameStateDto(gameId, "PVP", g.playerXId, g.playerOId, String.valueOf(nextTurn), status.name(), newBoard, deadline.toString(), null);
 
@@ -145,6 +145,20 @@ public class PvpService {
         return GameStatus.IN_PROGRESS;
     }
 
+    private static Instant endedAtFor(GameStatus status) {
+        return status == GameStatus.IN_PROGRESS ? null : Instant.now();
+    }
+
+    private static String winnerFor(GameStatus status) {
+        return switch (status) {
+            case X_WON -> "X";
+            case O_WON -> "O";
+            case TIE -> "TIE";
+            case FORFEIT -> "FORFEIT";
+            default -> null;
+        };
+    }
+
     public record GameStateDto(
             long gameId, String mode, Long playerXId, Long playerOId,
             String turn, String status, String board, String deadlineAt, String youAre
@@ -156,4 +170,3 @@ public class PvpService {
         }
     }
 }
-

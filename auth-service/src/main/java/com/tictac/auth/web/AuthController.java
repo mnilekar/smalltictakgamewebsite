@@ -9,11 +9,7 @@ import com.tictac.auth.service.LoginService;
 import com.tictac.auth.service.RegistrationService;
 import com.tictac.auth.service.UserProfileService;
 import jakarta.validation.Valid;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -50,12 +46,4 @@ public class AuthController {
         return userProfileService.findProfileById(userId);
     }
 
-    @GetMapping("/me")
-    public Map<String, Object> me(@AuthenticationPrincipal User user) {
-        if (user == null) {
-            throw new org.springframework.web.server.ResponseStatusException(
-                    org.springframework.http.HttpStatus.UNAUTHORIZED);
-        }
-        return Map.of("username", user.getUsername());
-    }
 }

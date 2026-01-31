@@ -1,7 +1,7 @@
 // Reuse GAME_API, authFetch, renderBoard, startTimer, stopTimer, updateTop, disableBoard, etc. from game.js
 
 const WS_URL = 'http://localhost:8091/ws';
-const AUTH_API = localStorage.getItem('apiBase') || 'http://localhost:8081/api/auth';
+const AUTH_API_BASE = window.AUTH_API || localStorage.getItem('apiBase') || 'http://localhost:8081/api/auth';
 let stomp = null;
 let autoRefreshTimer = null;
 let startCountdownTimer = null;
@@ -22,7 +22,7 @@ function displayName(profile) {
 async function fetchProfile(userId) {
   if (!userId) return null;
   try {
-    const resp = await fetch(`${AUTH_API}/profile/${userId}`);
+    const resp = await fetch(`${AUTH_API_BASE}/profile/${userId}`);
     if (!resp.ok) return null;
     return await resp.json();
   } catch {
