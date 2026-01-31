@@ -79,4 +79,22 @@ public class JdbcUserRepository implements UserRepository {
         );
         return list.isEmpty() ? java.util.Optional.empty() : java.util.Optional.of(list.get(0));
     }
+
+    @Override
+    public java.util.Optional<UserProfile> findProfileById(long userId) {
+        String sql = """
+                SELECT USER_ID, USERNAME, FIRST_NAME, LAST_NAME
+                FROM USERS
+                WHERE USER_ID = :id
+                """;
+        var list = jdbc.query(sql, Map.of("id", userId), (rs, rowNum) ->
+                new UserProfile(
+                        rs.getLong("USER_ID"),
+                        rs.getString("USERNAME"),
+                        rs.getString("FIRST_NAME"),
+                        rs.getString("LAST_NAME")
+                )
+        );
+        return list.isEmpty() ? java.util.Optional.empty() : java.util.Optional.of(list.get(0));
+    }
 }
