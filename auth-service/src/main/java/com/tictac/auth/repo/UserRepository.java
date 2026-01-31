@@ -13,4 +13,5 @@ public interface UserRepository {
     /** Inserts password hash & salt for the given user_id. */
     void insertCredentials(long userId, String passwordHash, String salt);
     Optional<UserWithHash> findByUsername(String username);
+    Optional<UserProfile> findProfileById(long userId);
 }

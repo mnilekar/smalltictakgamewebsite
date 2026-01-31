@@ -61,13 +61,16 @@ function startTimer() {
     const ss = String(s%60).padStart(2,'0');
     document.getElementById('g-timer').textContent = `${mm}:${ss}`;
 
-    // disable clicks if not your turn (vs-system) or if finished
+    // disable clicks if not your turn (vs-system/pvp) or if finished
     const finished = current.status !== 'IN_PROGRESS';
     let canClick = !finished;
-    if (current.mode === 'VS_SYSTEM') {
+    if (current.mode === 'VS_SYSTEM' || current.mode === 'PVP') {
       // Only allow on your turn
       const you = current.youAre; // 'X' or 'O'
-      canClick = canClick && (current.turn === you);
+      if (you) canClick = canClick && (current.turn === you);
+    }
+    if (current.mode === 'PVP' && window.pvpCountdownActive) {
+      canClick = false;
     }
     disableBoard(!canClick);
 

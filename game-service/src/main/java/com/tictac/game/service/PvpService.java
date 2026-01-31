@@ -61,6 +61,7 @@ public class PvpService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Game full");
 
         g = repo.find(gameId).orElseThrow();
+        publisher.broadcast(new GameEvent(gameId, g.board, g.currentTurn, g.status, g.deadlineAt.toString()));
         return GameStateDto.of(gameId, g, "O");
     }
 
@@ -155,5 +156,4 @@ public class PvpService {
         }
     }
 }
-
 
