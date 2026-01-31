@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Stats — TicTac</title>
+    <link rel="stylesheet" href="/styles.css"/>
+</head>
+<body>
+<div class="container">
+    <div class="nav">
+        <a id="nav-home" href="/index.html">Home</a>
+        <a id="nav-register" href="/register.html">Register</a>
+        <a id="nav-login" href="/login.html">Login</a>
+        <a id="nav-dashboard" href="/dashboard.html" style="display:none">Dashboard</a>
+        <a id="nav-stats" href="/stats.html" style="display:none">Stats</a>
+        <a id="nav-profile" href="/profile.html" style="display:none">Profile</a>
+        <a id="nav-logout" href="#" style="display:none">Logout</a>
+    </div>
+
+    <div class="card">
+        <h2>Stats</h2>
+        <div class="tabs">
+            <button class="btn active" id="tab-personal">Personal</button>
+            <button class="btn" id="tab-global">Global</button>
+        </div>
+    </div>
+
+    <section id="personal-section">
+        <div class="card">
+            <h3>Personal overview</h3>
+            <div class="stat-grid" id="personal-cards"></div>
+        </div>
+
+        <div class="card">
+            <h3>My Recent Matches</h3>
+            <div class="row">
+                <div class="input">
+                    <label>From</label>
+                    <input type="date" id="filter-from" />
+                </div>
+                <div class="input">
+                    <label>To</label>
+                    <input type="date" id="filter-to" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="input">
+                    <label>Mode</label>
+                    <select id="filter-mode">
+                        <option value="">All</option>
+                        <option value="SELF">Self</option>
+                        <option value="VS_SYSTEM">Vs System</option>
+                        <option value="PVP">PvP</option>
+                    </select>
+                </div>
+                <div class="input" style="justify-content:flex-end">
+                    <label>&nbsp;</label>
+                    <button class="btn" id="filter-apply">Apply Filters</button>
+                </div>
+            </div>
+
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Game</th>
+                    <th>Mode</th>
+                    <th>Played Against</th>
+                    <th>Status</th>
+                    <th>Winner</th>
+                    <th>Duration</th>
+                    <th>Created</th>
+                    <th>Ended</th>
+                </tr>
+                </thead>
+                <tbody id="history-body"></tbody>
+            </table>
+
+            <div class="row" style="margin-top:12px;align-items:center">
+                <button class="btn alt" id="history-prev">Prev</button>
+                <div class="small" id="history-page">Page 1</div>
+                <button class="btn alt" id="history-next">Next</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="global-section" style="display:none">
+        <div class="card">
+            <h3>Global Ranking</h3>
+            <div class="row">
+                <div class="input">
+                    <label>Minimum matches</label>
+                    <input id="global-min" type="number" min="1" value="5" />
+                </div>
+                <div class="input" style="justify-content:flex-end">
+                    <label>&nbsp;</label>
+                    <button class="btn" id="global-apply">Refresh</button>
+                </div>
+            </div>
+
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Username</th>
+                    <th>Played</th>
+                    <th>Wins</th>
+                    <th>Losses</th>
+                    <th>Ties</th>
+                    <th>Forfeits</th>
+                    <th>Win %</th>
+                </tr>
+                </thead>
+                <tbody id="global-body"></tbody>
+            </table>
+
+            <div class="row" style="margin-top:12px;align-items:center">
+                <button class="btn alt" id="global-prev">Prev</button>
+                <div class="small" id="global-page">Page 1</div>
+                <button class="btn alt" id="global-next">Next</button>
+            </div>
+        </div>
+    </section>
+</div>
+<script src="/app.js"></script>
+<script src="/stats.js"></script>
+</body>
+</html>

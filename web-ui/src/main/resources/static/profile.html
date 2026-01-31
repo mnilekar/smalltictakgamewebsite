@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Profile — TicTac</title>
+    <link rel="stylesheet" href="/styles.css"/>
+</head>
+<body>
+<div class="container">
+    <div class="nav">
+        <a id="nav-home" href="/index.html">Home</a>
+        <a id="nav-register" href="/register.html">Register</a>
+        <a id="nav-login" href="/login.html">Login</a>
+        <a id="nav-dashboard" href="/dashboard.html" style="display:none">Dashboard</a>
+        <a id="nav-stats" href="/stats.html" style="display:none">Stats</a>
+        <a id="nav-profile" href="/profile.html" style="display:none">Profile</a>
+        <a id="nav-logout" href="#" style="display:none">Logout</a>
+    </div>
+
+    <div class="card">
+        <h2>My Profile</h2>
+        <form id="profileForm">
+            <div class="row">
+                <div class="input"><label>First name*</label><input id="firstName" required disabled /></div>
+                <div class="input"><label>Last name*</label><input id="lastName" required disabled /></div>
+            </div>
+            <div class="row">
+                <div class="input"><label>Birth date*</label><input id="birthDate" type="date" required disabled /></div>
+                <div class="input"><label>Nationality*</label><input id="nationality" required disabled /></div>
+            </div>
+            <div class="row">
+                <div class="input"><label>Email*</label><input id="email" type="email" required disabled /></div>
+                <div class="input"><label>Mobile*</label><input id="mobile" required disabled /></div>
+            </div>
+            <div class="row">
+                <div class="input"><label>Username*</label><input id="username" required disabled /></div>
+                <div class="input"><label>Password</label><input id="password" type="password" placeholder="Leave blank to keep" disabled /></div>
+            </div>
+            <div class="row">
+                <div class="input"><label>Created at</label><input id="createdAt" disabled /></div>
+                <div class="input"><label>Updated at</label><input id="updatedAt" disabled /></div>
+            </div>
+            <div class="small">Password must be ≥8 chars with at least 1 uppercase, 1 lowercase, and 1 special character.</div>
+            <div id="profile-msg" class="error"></div>
+            <div id="profile-ok" class="success"></div>
+            <div class="row">
+                <button class="btn" type="button" id="edit-btn">Edit</button>
+                <button class="btn" type="submit" id="save-btn" disabled>Save</button>
+                <button class="btn alt" type="button" id="cancel-btn" disabled>Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="/app.js"></script>
+<script src="/profile.js"></script>
+</body>
+</html>

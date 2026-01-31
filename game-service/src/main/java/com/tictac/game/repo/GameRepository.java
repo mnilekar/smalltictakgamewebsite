@@ -9,7 +9,7 @@ public interface GameRepository {
     long create(Game g); // returns GAME_ID
     Optional<Game> find(long gameId);
     void insertMove(long gameId, int moveNo, Long byUserId, char mark, int row, int col);
-    void updateState(long gameId, String board, char currentTurn, GameStatus status, Instant deadlineAt);
+    void updateState(long gameId, String board, char currentTurn, GameStatus status, Instant deadlineAt, Instant endedAt, String winner);
     int maxMoveNo(long gameId);
     boolean setPlayerOIfVacant(long gameId, long userId);
 }

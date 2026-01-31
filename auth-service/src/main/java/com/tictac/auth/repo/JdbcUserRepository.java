@@ -24,15 +24,29 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     public boolean existsByUsername(String username) {
-        String sql = "SELECT COUNT(1) FROM USERS WHERE USERNAME = :u";
+        String sql = "SELECT COUNT(1) FROM USERS WHERE LOWER(USERNAME) = LOWER(:u)";
         Integer c = jdbc.queryForObject(sql, Map.of("u", username), Integer.class);
         return c != null && c > 0;
     }
 
     @Override
     public boolean existsByEmail(String email) {
-        String sql = "SELECT COUNT(1) FROM USERS WHERE EMAIL = :e";
+        String sql = "SELECT COUNT(1) FROM USERS WHERE LOWER(EMAIL) = LOWER(:e)";
         Integer c = jdbc.queryForObject(sql, Map.of("e", email), Integer.class);
+        return c != null && c > 0;
+    }
+
+    @Override
+    public boolean existsByUsernameIgnoreCaseExcludingId(String username, long userId) {
+        String sql = "SELECT COUNT(1) FROM USERS WHERE LOWER(USERNAME) = LOWER(:u) AND USER_ID <> :id";
+        Integer c = jdbc.queryForObject(sql, Map.of("u", username, "id", userId), Integer.class);
+        return c != null && c > 0;
+    }
+
+    @Override
+    public boolean existsByEmailIgnoreCaseExcludingId(String email, long userId) {
+        String sql = "SELECT COUNT(1) FROM USERS WHERE LOWER(EMAIL) = LOWER(:e) AND USER_ID <> :id";
+        Integer c = jdbc.queryForObject(sql, Map.of("e", email, "id", userId), Integer.class);
         return c != null && c > 0;
     }
 
@@ -96,5 +110,62 @@ public class JdbcUserRepository implements UserRepository {
                 )
         );
         return list.isEmpty() ? java.util.Optional.empty() : java.util.Optional.of(list.get(0));
+    }
+
+    @Override
+    public java.util.Optional<UserProfileDetails> findProfileDetailsByUsername(String username) {
+        String sql = """
+                SELECT USER_ID, USERNAME, FIRST_NAME, LAST_NAME, BIRTH_DATE, NATIONALITY, EMAIL, MOBILE, CREATED_AT, UPDATED_AT
+                FROM USERS
+                WHERE LOWER(USERNAME) = LOWER(:u)
+                """;
+        var list = jdbc.query(sql, Map.of("u", username), (rs, rowNum) ->
+                new UserProfileDetails(
+                        rs.getLong("USER_ID"),
+                        rs.getString("USERNAME"),
+                        rs.getString("FIRST_NAME"),
+                        rs.getString("LAST_NAME"),
+                        rs.getDate("BIRTH_DATE") != null ? rs.getDate("BIRTH_DATE").toLocalDate() : null,
+                        rs.getString("NATIONALITY"),
+                        rs.getString("EMAIL"),
+                        rs.getString("MOBILE"),
+                        rs.getTimestamp("CREATED_AT") != null ? rs.getTimestamp("CREATED_AT").toInstant() : null,
+                        rs.getTimestamp("UPDATED_AT") != null ? rs.getTimestamp("UPDATED_AT").toInstant() : null
+                )
+        );
+        return list.isEmpty() ? java.util.Optional.empty() : java.util.Optional.of(list.get(0));
+    }
+
+    @Override
+    public void updateProfile(long userId, Map<String, Object> updates) {
+        if (updates.isEmpty()) {
+            return;
+        }
+        StringBuilder sb = new StringBuilder("UPDATE USERS SET ");
+        int i = 0;
+        for (String key : updates.keySet()) {
+            if (i > 0) sb.append(", ");
+            sb.append(key).append(" = :").append(key);
+            i++;
+        }
+        sb.append(", UPDATED_AT = SYSTIMESTAMP WHERE USER_ID = :id");
+        Map<String, Object> params = new HashMap<>(updates);
+        params.put("id", userId);
+        jdbc.update(sb.toString(), params);
+    }
+
+    @Override
+    public void updateCredentials(long userId, String passwordHash, String salt) {
+        String sql = """
+                UPDATE USER_CREDENTIALS
+                SET PASSWORD_HASH = :hash,
+                    PASSWORD_SALT = :salt
+                WHERE USER_ID = :id
+                """;
+        jdbc.update(sql, Map.of(
+                "id", userId,
+                "hash", passwordHash,
+                "salt", salt
+        ));
     }
 }

@@ -101,23 +101,26 @@ public class JdbcGameRepository implements GameRepository {
     }
 
     @Override
-    public void updateState(long gameId, String board, char currentTurn, GameStatus status, Instant deadlineAt) {
+    public void updateState(long gameId, String board, char currentTurn, GameStatus status, Instant deadlineAt, Instant endedAt, String winner) {
         String sql = """
   UPDATE GAMES
      SET BOARD_STATE = :board,
          CURRENT_TURN = :turn,
          GAME_STATUS  = :status,
          DEADLINE_AT  = :deadline,
+         ENDED_AT     = :endedAt,
+         WINNER       = :winner,
          UPDATED_AT   = SYSTIMESTAMP
    WHERE GAME_ID = :id
   """;
-        Map<String,Object> params = Map.of(
-                "board", board,
-                "turn", String.valueOf(currentTurn),
-                "status", status.name(),
-                "deadline", java.sql.Timestamp.from(deadlineAt),
-                "id", gameId
-        );
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("board", board)
+                .addValue("turn", String.valueOf(currentTurn))
+                .addValue("status", status.name())
+                .addValue("deadline", java.sql.Timestamp.from(deadlineAt))
+                .addValue("endedAt", endedAt != null ? java.sql.Timestamp.from(endedAt) : null)
+                .addValue("winner", winner)
+                .addValue("id", gameId);
         jdbc.update(sql, params);
     }
 
