@@ -1,10 +1,36 @@
 // web-ui/src/main/resources/static/app.js
 
-// Configure API base once. You can override in the browser console via:
-// localStorage.setItem('apiBase', 'http://localhost:8081/api/auth'); location.reload();
-const AUTH_API = localStorage.getItem('apiBase') || 'http://localhost:8081/api/auth';
-window.AUTH_API = AUTH_API;
-console.log('AUTH_API =', AUTH_API);
+let AUTH_BASE;
+let GAME_BASE;
+let WS_BASE;
+let AUTH_API;
+let configPromise;
+
+async function loadConfig() {
+  if (configPromise) return configPromise;
+  configPromise = (async () => {
+    try {
+      const res = await fetch('/config.json', { cache: 'no-store' });
+      const cfg = await res.json();
+      AUTH_BASE = cfg.authBase || 'http://localhost:8081';
+      GAME_BASE = cfg.gameBase || 'http://localhost:8091';
+      WS_BASE = cfg.wsBase || 'ws://localhost:8091/ws';
+    } catch (e) {
+      AUTH_BASE = 'http://localhost:8081';
+      GAME_BASE = 'http://localhost:8091';
+      WS_BASE = 'ws://localhost:8091/ws';
+    }
+    AUTH_API = `${AUTH_BASE}/api/auth`;
+    window.AUTH_BASE = AUTH_BASE;
+    window.GAME_BASE = GAME_BASE;
+    window.WS_BASE = WS_BASE;
+    window.AUTH_API = AUTH_API;
+    console.log('AUTH_API =', AUTH_API);
+  })();
+  return configPromise;
+}
+
+window.loadConfig = loadConfig;
 
 if (typeof window.authFetch !== 'function') {
   window.authFetch = async (url, opts = {}) => {
@@ -27,7 +53,8 @@ function validPassword(p){
 }
 
 // ------- Register -------
-function setupRegisterPage(){
+async function setupRegisterPage(){
+  await loadConfig();
   const first = $('firstName'), last = $('lastName'), uname = $('username');
   const hints = $('unameHints');
 
@@ -88,7 +115,8 @@ function setupRegisterPage(){
 }
 
 // ------- Login -------
-function setupLoginPage(){
+async function setupLoginPage(){
+  await loadConfig();
   $('loginForm').addEventListener('submit', async (e)=>{
     e.preventDefault();
     setMsg('login-msg','');
@@ -122,7 +150,8 @@ function setupLoginPage(){
 }
 
 // ------- Dashboard -------
-function setupDashboard(){
+async function setupDashboard(){
+  await loadConfig();
   const token = sessionStorage.getItem('token');
   if (!token) { location.href='/login.html'; return; }
 
