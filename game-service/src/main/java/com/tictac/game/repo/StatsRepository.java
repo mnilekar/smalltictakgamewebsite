@@ -55,7 +55,7 @@ public class StatsRepository {
                   ELSE ROUND((CAST(g.ENDED_AT AS DATE) - CAST(g.CREATED_AT AS DATE)) * 86400)
                 END AS DURATION_SECONDS
             FROM GAMES g
-            LEFT JOIN AUTH.USERS u ON u.USER_ID = CASE
+            LEFT JOIN USERS u ON u.USER_ID = CASE
                 WHEN g.GAME_MODE = 'PVP' AND g.PLAYER_X_ID = :userId THEN g.PLAYER_O_ID
                 WHEN g.GAME_MODE = 'PVP' AND g.PLAYER_O_ID = :userId THEN g.PLAYER_X_ID
                 ELSE NULL
@@ -162,7 +162,7 @@ public class StatsRepository {
                        SUM(CASE WHEN f.GAME_STATUS = 'FORFEIT' AND f.WINNER IN ('X','O') AND f.WINNER <> f.MARK THEN 1 ELSE 0 END) AS FORFEITS,
                        MAX(f.ENDED_AT) AS LAST_ENDED_AT
                 FROM finished f
-                JOIN AUTH.USERS u ON u.USER_ID = f.USER_ID
+                JOIN USERS u ON u.USER_ID = f.USER_ID
                 GROUP BY u.USERNAME
             ),
             ranked AS (
