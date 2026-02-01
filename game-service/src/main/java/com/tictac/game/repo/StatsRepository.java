@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Types;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -70,8 +71,8 @@ public class StatsRepository {
 
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("userId", userId)
-                .addValue("fromDate", fromTs)
-                .addValue("toDate", toTs)
+                .addValue("fromDate", fromTs, Types.TIMESTAMP)
+                .addValue("toDate", toTs, Types.TIMESTAMP)
                 .addValue("modesEmpty", modesEmpty)
                 .addValue("modes", modeList)
                 .addValue("limit", limit)
