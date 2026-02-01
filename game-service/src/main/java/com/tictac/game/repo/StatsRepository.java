@@ -52,7 +52,7 @@ public class StatsRepository {
                 END AS PLAYED_AGAINST,
                 CASE
                   WHEN g.ENDED_AT IS NULL THEN NULL
-                  ELSE ROUND((g.ENDED_AT - g.CREATED_AT) * 86400)
+                  ELSE ROUND((CAST(g.ENDED_AT AS DATE) - CAST(g.CREATED_AT AS DATE)) * 86400)
                 END AS DURATION_SECONDS
             FROM GAMES g
             LEFT JOIN AUTH.USERS u ON u.USER_ID = CASE
@@ -116,7 +116,7 @@ public class StatsRepository {
                       THEN 1
                       ELSE 0
                 END) AS FORFEITS,
-                SUM(ROUND((NVL(ENDED_AT, SYSTIMESTAMP) - CREATED_AT) * 86400)) AS TOTAL_TIME_SECONDS
+                SUM(ROUND((CAST(NVL(ENDED_AT, SYSTIMESTAMP) AS DATE) - CAST(CREATED_AT AS DATE)) * 86400)) AS TOTAL_TIME_SECONDS
             FROM GAMES
             WHERE GAME_STATUS IN ('X_WON','O_WON','TIE','FORFEIT')
               AND (:userId = PLAYER_X_ID OR :userId = PLAYER_O_ID)
