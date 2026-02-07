@@ -1,4 +1,17 @@
-const GAME_API = localStorage.getItem('gameApiBase') || 'http://localhost:8091/api/game';
+let GAME_API;
+
+async function ensureStatsConfig() {
+  if (typeof window.ensureGameConfig === 'function') {
+    await window.ensureGameConfig();
+  } else if (typeof window.loadConfig === 'function') {
+    await window.loadConfig();
+    const gameBase = window.GAME_BASE || 'http://localhost:8091';
+    GAME_API = `${gameBase}/api/game`;
+    window.GAME_API = GAME_API;
+    return;
+  }
+  GAME_API = window.GAME_API || `${window.GAME_BASE || 'http://localhost:8091'}/api/game`;
+}
 
 const historyState = { limit: 20, offset: 0, lastCount: 0 };
 const globalState = { limit: 50, offset: 0, lastCount: 0 };
@@ -170,11 +183,12 @@ function setupPaging() {
   });
 }
 
-function initStats() {
+async function initStats() {
   if (!sessionStorage.getItem('token')) {
     location.href = '/login.html';
     return;
   }
+  await ensureStatsConfig();
   setupTabs();
   setupPaging();
   loadMyStats().catch(console.error);
@@ -182,4 +196,6 @@ function initStats() {
   loadGlobal().catch(console.error);
 }
 
-document.addEventListener('DOMContentLoaded', initStats);
+document.addEventListener('DOMContentLoaded', () => {
+  initStats().catch(console.error);
+});

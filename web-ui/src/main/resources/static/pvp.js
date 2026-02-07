@@ -1,7 +1,19 @@
 // Reuse GAME_API, authFetch, renderBoard, startTimer, stopTimer, updateTop, disableBoard, etc. from game.js
 
-const WS_URL = 'http://localhost:8091/ws';
-const AUTH_API_BASE = window.AUTH_API || localStorage.getItem('apiBase') || 'http://localhost:8081/api/auth';
+let WS_URL;
+let AUTH_API_BASE;
+
+async function ensurePvpConfig() {
+  if (typeof window.ensureGameConfig === 'function') {
+    await window.ensureGameConfig();
+  } else if (typeof window.loadConfig === 'function') {
+    await window.loadConfig();
+  }
+  const authBase = window.AUTH_BASE || 'http://localhost:8081';
+  const wsBase = window.WS_BASE || 'ws://localhost:8091/ws';
+  AUTH_API_BASE = `${authBase}/api/auth`;
+  WS_URL = wsBase;
+}
 let stomp = null;
 let autoRefreshTimer = null;
 let startCountdownTimer = null;
@@ -243,8 +255,9 @@ async function refreshState(){
   } catch {}
 }
 
-function setupPvpPage(){
+async function setupPvpPage(){
   if (!sessionStorage.getItem('token')) { location.href = '/login.html'; return; }
+  await ensurePvpConfig();
   applyNavAuthState?.();
 
   document.getElementById('btn-create').addEventListener('click', createLobby);
