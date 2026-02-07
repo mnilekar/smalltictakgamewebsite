@@ -1,4 +1,14 @@
-const MM_API = 'http://localhost:8091/api/game/pvp/mm';
+let MM_API;
+
+async function ensureMatchmakingConfig() {
+  if (typeof window.ensureGameConfig === 'function') {
+    await window.ensureGameConfig();
+  } else if (typeof window.loadConfig === 'function') {
+    await window.loadConfig();
+  }
+  const gameBase = window.GAME_BASE || 'http://localhost:8091';
+  MM_API = `${gameBase}/api/game/pvp/mm`;
+}
 let ticketId = null, countdown = 30, timer = null;
 
 if (typeof window.authFetch !== 'function') {
@@ -84,6 +94,7 @@ function backToDashboard(){
 
 async function setupMatchmakingPage(){
   if (!sessionStorage.getItem('token')) { window.location.href = '/login.html'; return; }
+  await ensureMatchmakingConfig();
   applyNavAuthState?.();
 
   document.getElementById('mm-try').addEventListener('click', tryAgain);

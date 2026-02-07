@@ -1,6 +1,18 @@
 // Game UI wiring for game-service
-const GAME_API = localStorage.getItem('gameApiBase') || 'http://localhost:8091/api/game';
-console.log('GAME_API =', GAME_API);
+let GAME_BASE;
+let GAME_API;
+
+async function ensureGameConfig() {
+  if (typeof window.loadConfig === 'function') {
+    await window.loadConfig();
+  }
+  GAME_BASE = window.GAME_BASE || 'http://localhost:8091';
+  GAME_API = `${GAME_BASE}/api/game`;
+  window.GAME_API = GAME_API;
+  console.log('GAME_API =', GAME_API);
+}
+
+window.ensureGameConfig = ensureGameConfig;
 
 let current = null;   // { id, mode, youAre, board, turn, status, deadlineAt }
 let timerId = null;
@@ -247,8 +259,9 @@ function hideStartPanel(){
   if (p) p.style.display = 'none';
 }
 
-function setupGamePage(){
+async function setupGamePage(){
   if (!sessionStorage.getItem('token')) { location.href = '/login.html'; return; }
+  await ensureGameConfig();
 
   document.getElementById('btn-self')?.addEventListener('click', () => startSelf());
   document.getElementById('btn-vs')?.addEventListener('click', () => startVs());

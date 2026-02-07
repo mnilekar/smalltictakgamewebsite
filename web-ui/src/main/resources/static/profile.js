@@ -1,4 +1,12 @@
-const PROFILE_API = window.AUTH_API || localStorage.getItem('apiBase') || 'http://localhost:8081/api/auth';
+let PROFILE_API;
+
+async function ensureProfileConfig() {
+  if (typeof window.loadConfig === 'function') {
+    await window.loadConfig();
+  }
+  const authBase = window.AUTH_BASE || 'http://localhost:8081';
+  PROFILE_API = `${authBase}/api/auth`;
+}
 
 let originalProfile = null;
 let editMode = false;
@@ -160,13 +168,16 @@ function setupProfileForm() {
   });
 }
 
-function initProfile() {
+async function initProfile() {
   if (!sessionStorage.getItem('token')) {
     location.href = '/login.html';
     return;
   }
+  await ensureProfileConfig();
   setupProfileForm();
   loadProfile().catch(() => setMsg('profile-msg', 'Unable to load profile.'));
 }
 
-document.addEventListener('DOMContentLoaded', initProfile);
+document.addEventListener('DOMContentLoaded', () => {
+  initProfile().catch(() => setMsg('profile-msg', 'Unable to load profile.'));
+});
