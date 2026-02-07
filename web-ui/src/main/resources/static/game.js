@@ -1,4 +1,5 @@
 // Game UI wiring for game-service
+
 let GAME_BASE_CFG;
 let GAME_API;
 
@@ -6,6 +7,7 @@ async function ensureGameConfig() {
   if (typeof window.loadConfig === 'function') {
     await window.loadConfig();
   }
+
   GAME_BASE_CFG = window.GAME_BASE || 'http://localhost:8091';
   GAME_API = `${GAME_BASE_CFG}/api/game`;
   window.GAME_API = GAME_API;
